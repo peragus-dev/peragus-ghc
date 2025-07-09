@@ -1,4 +1,4 @@
-import Path from 'node:path';
+import * as Path from 'node:path';
 import { spawn } from 'node:child_process';
 import type { 
   SpawnCallRequestType, 

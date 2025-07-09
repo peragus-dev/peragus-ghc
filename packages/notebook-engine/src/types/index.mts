@@ -41,3 +41,6 @@ export interface CellErrorType {
 export type UpdateResultType =
   | { success: true; cell: CellType }
   | { success: false; errors: CellErrorType[] };
+
+// Re-export communication types for convenience
+export type { NotebookCommand, NotebookResponse, NotebookEvent } from '../communication/types.mjs';

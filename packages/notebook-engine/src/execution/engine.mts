@@ -2,7 +2,7 @@ import type { CodeCellType } from '../types/index.mjs';
 import type { ExecutionResult, ExecutionOptions } from './types.mjs';
 import { node, tsx } from './spawner.mjs';
 import { promises as fs } from 'node:fs';
-import Path from 'node:path';
+import * as Path from 'node:path';
 
 export class NotebookExecutionEngine {
   
