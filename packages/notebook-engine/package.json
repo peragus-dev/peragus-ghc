@@ -1,0 +1,16 @@
+{
+  "name": "@srcbook/notebook-engine",
+  "version": "0.1.0",
+  "description": "Headless notebook execution engine for Srcbook",
+  "type": "module",
+  "main": "dist/index.mjs",
+  "types": "dist/index.d.mts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
