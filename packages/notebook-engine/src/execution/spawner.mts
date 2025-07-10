@@ -44,15 +44,17 @@ export function node(options: NodeRequestType) {
 }
 
 export function tsx(options: NodeRequestType) {
-  const { cwd, env, entry, stdout, stderr, onExit } = options;
+  const { cwd, env, entry, stdout, stderr, onExit, onError } = options;
 
+  // Use npx tsx instead of local node_modules to avoid npm install requirement
   return spawnCall({
-    command: Path.join(cwd, 'node_modules', '.bin', 'tsx'),
+    command: 'npx',
     cwd,
-    args: [entry],
+    args: ['-y', 'tsx', entry],
     stdout,
     stderr,
     onExit,
+    onError,
     env: { ...process.env, ...env },
   });
 }

@@ -1,0 +1,26 @@
+{
+  "mcpServers": {
+    "exa": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "/path/to/exa-mcp-server"
+      ],
+      "env": {
+        "EXA_API_KEY": "YOUR_EXA_API_KEY_HERE",
+        "YOUTUBE_API_KEY": "YOUR_YOUTUBE_API_KEY_HERE"
+      }
+    },
+    "peragus": {
+      "command": "node",
+      "args": [
+        "/Users/b.c.nims/Peragus/peragus-dos/peragus-ghc/packages/mcp-server/dist/cli.mjs"
+      ],
+      "env": {
+        "NODE_ENV": "production",
+        "SRCBOOK_SESSION_DIR": "/tmp/srcbook-sessions",
+        "SRCBOOK_MAX_SESSIONS": "50"
+      }
+    }
+  }
+}
