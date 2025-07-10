@@ -1,6 +1,7 @@
 import type { SessionType, CodeCellType, MarkdownCellType } from './types/index.mjs';
 import { 
   findSessionByDirname, 
+  findSession,
   addSession, 
   updateSessionInMemory, 
   removeSession 
@@ -40,9 +41,12 @@ export class NotebookAPI {
     removeSession(sessionId);
   }
 
-  private findSessionById(_sessionId: string): SessionType | undefined {
-    // This would need to be implemented in the session state management
-    throw new Error('findSessionById not implemented yet');
+  private findSessionById(sessionId: string): SessionType | undefined {
+    try {
+      return findSession(sessionId);
+    } catch {
+      return undefined;
+    }
   }
 
   // Execution API

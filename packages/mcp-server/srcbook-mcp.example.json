@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "srcbook-notebook": {
+      "command": "node",
+      "args": [
+        "/path/to/srcbook/packages/mcp-server/dist/cli.mjs"
+      ],
+      "env": {
+        "NODE_ENV": "production"
+      }
+    }
+  }
+}

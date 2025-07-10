@@ -1,0 +1,39 @@
+{
+  "name": "@srcbook/mcp-server",
+  "version": "1.0.0",
+  "description": "MCP server for Srcbook notebook execution - enables AI agents to programmatically create and execute notebooks",
+  "type": "module",
+  "main": "dist/index.mjs",
+  "types": "dist/index.d.mts",
+  "bin": {
+    "srcbook-mcp": "./dist/cli.mjs"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/cli.mjs",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.5.0",
+    "@srcbook/notebook-engine": "workspace:*",
+    "@srcbook/shared": "workspace:*",
+    "nanoid": "^5.0.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "srcbook",
+    "notebook",
+    "ai-agent",
+    "typescript"
+  ],
+  "author": "Srcbook Team",
+  "license": "Apache-2.0"
+}
