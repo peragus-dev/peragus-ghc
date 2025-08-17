@@ -1,0 +1,23 @@
+{
+  "passed": 5,
+  "failed": 0,
+  "stages": {
+    "stage1": {
+      "success": true,
+      "envPath": "/tmp/.venv/test-workflow-env"
+    },
+    "stage2": {
+      "success": true,
+      "modelPath": "/tmp/test-logistic-model.py"
+    },
+    "stage3": {
+      "success": true
+    },
+    "stage4": {
+      "success": true
+    },
+    "stage5": {
+      "success": true
+    }
+  }
+}
