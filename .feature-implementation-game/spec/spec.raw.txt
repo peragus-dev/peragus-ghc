@@ -1,0 +1,120 @@
+# Phase 1: Python Environment & PySD Setup
+
+## Overview
+This phase focuses on establishing a robust and self-contained Python environment within the `peragus-ghc` notebook infrastructure, ensuring all necessary PySD libraries and their dependencies are correctly installed and accessible. This forms the foundational backend layer for all subsequent PySD integration capabilities, aligning with the "Simulation Engine Service" and "PySD Bridge Library" components of the Krishna Specification.
+
+## Prerequisites
+- Operational `peragus-ghc` notebook environment with Node.js runtime.
+- Access to the underlying operating system for Python installation and environment management.
+- Network access for package managers (pip).
+
+## Objectives
+1. Implement a mechanism for creating and managing a dedicated Python virtual environment for PySD.
+2. Ensure Python 3.8+ is available and correctly configured within this environment.
+3. Automate the installation of PySD and its core dependencies (Pandas, NumPy, Xarray).
+4. Verify the successful activation and functionality of the Python environment and installed libraries.
+
+## Technical Architecture
+
+### 1. Python Environment Management
+Choice: A dedicated Python virtual environment (`venv`) will be used to isolate PySD dependencies from other system-wide Python installations. This ensures reproducibility and avoids dependency conflicts. For production/deployment, a `requirements.txt` file will specify exact versions.
+
+```typescript
+// Interface for managing Python environments from Node.js perspective
+interface IPythonEnvironmentManager {
+  /**
+   * Initializes a Python virtual environment at a specified path.
+   * @param envPath The desired path for the virtual environment.
+   * @returns A promise that resolves when the environment is initialized.
+   // TEST: initializePythonEnvironment creates a virtual environment directory.
+   // TEST: initializePythonEnvironment installs Python 3.8+ within the environment.
+   */
+  initializeEnvironment(envPath: string): Promise<void>;
+
+  /**
+   * Ensures PySD and its dependencies are installed in the specified environment.
+   * @param envPath The path to the virtual environment.
+   * @returns A promise that resolves when all packages are installed.
+   // TEST: installPySDDependencies installs pandas, numpy, and xarray.
+   // TEST: installPySDDependencies installs pysd.
+   // TEST: installPySDDependencies handles network errors during installation.
+   */
+  installPySDDependencies(envPath: string): Promise<void>;
+
+  /**
+   * Verifies if PySD is importable within the environment.
+   * @param envPath The path to the virtual environment.
+   * @returns A promise resolving to true if PySD is accessible, false otherwise.
+   // TEST: verifyPySDInstallation returns true if pysd is importable.
+   // TEST: verifyPySDInstallation returns false if pysd is not found.
+   */
+  verifyPySDInstallation(envPath: string): Promise<boolean>;
+
+  /**
+   * Executes a simple Python script in the given environment to confirm activation.
+   * @param envPath The path to the virtual environment.
+   * @param scriptContent The Python script to execute.
+   * @returns A promise resolving to the stdout of the script.
+   // TEST: executePythonScriptInEnv runs a basic script successfully.
+   // TEST: executePythonScriptInEnv captures stdout from the script.
+   */
+  executePythonScriptInEnv(envPath: string, scriptContent: string): Promise<string>;
+}
+```
+
+## Implementation Steps (TDD Approach)
+
+1.  **Objective: Implement environment initialization**
+    *   **TDD Anchor:** // TEST: `PythonEnvironmentManager`'s `initializeEnvironment` method creates a new Python virtual environment directory structure at the specified path.
+    *   **TDD Anchor:** // TEST: The `python` executable within the created virtual environment points to Python 3.8 or higher.
+    *   *Implementation:* Use Node.js `child_process` to execute `python3 -m venv [envPath]`.
+
+2.  **Objective: Implement PySD and dependency installation**
+    *   **TDD Anchor:** // TEST: `PythonEnvironmentManager`'s `installPySDDependencies` method successfully installs `pysd`, `pandas`, `numpy`, and `xarray` into the virtual environment using `pip`.
+    *   **TDD Anchor:** // TEST: `installPySDDependencies` handles cases where network access is unavailable, signaling an error gracefully.
+    *   *Implementation:* Use `child_process` to run `pip install -r requirements.txt` within the activated environment. Generate `requirements.txt` dynamically or use a predefined one.
+
+3.  **Objective: Implement PySD installation verification**
+    *   **TDD Anchor:** // TEST: `PythonEnvironmentManager`'s `verifyPySDInstallation` returns `true` when `import pysd` executes without error in the environment.
+    *   **TDD Anchor:** // TEST: `verifyPySDInstallation` returns `false` or throws an error if `import pysd` fails.
+    *   *Implementation:* Execute a small Python script via `child_process` that attempts `import pysd` and prints a success/failure indicator.
+
+4.  **Objective: Test overall Python environment activation and execution**
+    *   **TDD Anchor:** // TEST: A basic Python script containing `print('Hello from Python')` executes successfully within the configured environment using `executePythonScriptInEnv` and returns the expected output.
+    *   *Implementation:* Call `executePythonScriptInEnv` with a simple print statement.
+
+## Integration Points
+- **Node.js `child_process` module**: For executing Python commands and scripts.
+- **File System**: For creating and managing virtual environment directories.
+- **`requirements.txt`**: To manage Python dependencies for reproducibility.
+
+## Security Considerations
+- **Path Validation**: Ensure all paths passed to `child_process` commands are sanitized to prevent directory traversal or command injection vulnerabilities.
+- **Least Privilege**: The Python environment should run with minimum necessary permissions.
+- **Dependency Vetting**: Only install verified PySD and Python package versions to avoid known vulnerabilities.
+
+## Performance Targets
+- Python environment initialization: < 30 seconds (first run), < 5 seconds (subsequent checks).
+- PySD and dependency installation: < 2 minutes (first run, depending on network).
+
+## Testing Strategy
+- **Unit Tests**:
+    - Validate `initializeEnvironment` correctly sets up the `venv`.
+    - Verify `installPySDDependencies` triggers `pip` commands and manages success/failure.
+    - Test `verifyPySDInstallation` with both present and absent PySD installations.
+    - Ensure `executePythonScriptInEnv` properly invokes Python scripts and captures output/errors.
+- **Integration Tests**:
+    - End-to-end test of environment setup, dependency installation, and a basic `import pysd` verification.
+    - Test robust error propagation from Python `child_process` executions to Node.js.
+- **TDD Anchors**: All TDD anchors mentioned in "Objectives" and "Implementation Steps" will be translated into concrete test cases.
+
+## Questions for Stakeholder Input
+- Is there a preference for `venv` vs. `conda` vs. Docker containers for Python environment management in development vs. deployment? (`venv` chosen for initial simplicity, but deployment strategy needs clarification). (STAKEHOLDER: let's use .venv)
+- What are the specific performance acceptable limits for the initial setup on first use? (STAKEHOLDER: I just want it to run at first: we'll work on performance later on.)
+- Are there any existing Python environment management conventions within `peragus-ghc` that should be adhered to? (negative)
+
+## Next Phase Dependencies
+Phase 2: Core Model Loading & Execution, which requires a functional Python environment with PySD installed.
+
+## Conclusion
+Phase 1 establishes the critical Python runtime and PySD library foundation for backend operations. Successful completion of this phase ensures that the `peragus-ghc` notebook can reliably interact with the PySD ecosystem, paving the way for backend model loading and simulation capabilities for the Krishna platform.

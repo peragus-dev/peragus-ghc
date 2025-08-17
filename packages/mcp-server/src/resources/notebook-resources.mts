@@ -6,6 +6,14 @@ import type { MCPSessionType } from '../types.mjs';
 export function notebookResources(sessions: Map<string, MCPSessionType>): Resource[] {
   const resources: Resource[] = [];
 
+  // Global guide: PySD parallel experiments workflow
+  resources.push({
+    uri: 'guide://pysd-workflow',
+    name: 'PySD Parallel Experiments Workflow',
+    mimeType: 'text/markdown',
+    description: 'Step-by-step workflow to run parallel PySD experiments via container-use (with checkpoint optimization).',
+  });
+
   // Add resources for each active session
   sessions.forEach((session, sessionId) => {
     // Notebook state resource
@@ -51,6 +59,84 @@ export async function readNotebookResource(uri: string, sessions: Map<string, MC
   // Parse the URI
   const match = uri.match(/^notebook:\/\/(.+)$/);
   if (!match) {
+    // Handle global guide resources
+    if (uri === 'guide://pysd-workflow') {
+      const guideText = `### PySD Parallel Experiments Workflow (via container-use MCP)
+
+This guide describes how to run multiple PySD data experiments in parallel using container-use, orchestrated by the PySD tools in this MCP server. It includes an optimization to checkpoint the prepared environment for fast spin-up of batch runs.
+
+#### 1) Create a new experiment
+- Tool: \`pysd_create_experiment\`
+- Args:
+\`\n{
+  "name": "Teacup Batch",
+  "description": "Teacup cooling parameter sweep",
+  "experiment_type": "single",  
+  "base_image": "python:3.11"
+}\n\`
+
+#### 2) Load model and prepare environment
+- Tool: \`pysd_load_model\`
+- Args (example using upload):
+\`\n{
+  "experiment_id": "<from step 1>",
+  "source": { "type": "upload", "content": "<base64 of model>" },
+  "filename": "teacup.mdl"
+}\n\`
+- What happens:
+  - Creates a base container, installs PySD stack, converts model if needed, and sets \`model_path\`.
+  - Optimization: the server checkpoints the prepared environment and stores the image in \`session.results.metadata.baseImage\` so subsequent batch runs start faster.
+
+#### 3) Run batch experiments in parallel
+- Tool: \`pysd_batch_experiment\`
+- Args (example):
+\`\n{
+  "experiment_id": "<id>",
+  "model_path": "models/teacup.mdl.py",
+  "parameter_ranges": {
+    "room_temperature": [65, 70, 75],
+    "characteristic_time": [10, 15]
+  },
+  "parallel_containers": 4,
+  "replicates": 2
+}\n\`
+- Behavior:
+  - Queues all combinations, starts up to \`parallel_containers\` in parallel.
+  - New containers reuse the checkpoint image (if present) and skip heavy installs.
+  - Progress and ETA are written as notebook markdown updates; logs available via \`container-use log <env_id>\`.
+
+#### 4) Monitor progress
+- Tool: \`pysd_get_status\`
+- Args: \`{ "experiment_id": "<id>" }\`
+- Returns summary, per-run details, and container-use commands (log/terminal/checkout).
+
+#### 5) Aggregate results
+- Tool: \`pysd_aggregate_results\`
+- Args: \`{ "experiment_id": "<id>" }\`
+- Outputs in-container files:
+  - \`results/aggregated_results.json\`
+  - \`results/aggregated_summary.csv\`
+  - \`results/parameter_sweep_data.json\`
+
+#### 6) Cleanup
+- Tool: \`pysd_cleanup_experiment\`
+- Args: \`{ "experiment_id": "<id>", "archive_results": false }\`
+
+Notes:
+- All operations route through container-use MCP tools; no direct host operations.
+- If checkpoint is unavailable, the system falls back to base Python image and installs dependencies normally.
+`;
+
+      return {
+        contents: [
+          {
+            uri,
+            mimeType: 'text/markdown',
+            text: guideText,
+          },
+        ],
+      };
+    }
     throw new Error(`Invalid notebook URI: ${uri}`);
   }
 
