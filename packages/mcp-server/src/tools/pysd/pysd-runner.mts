@@ -1,6 +1,16 @@
 import { Tool } from "@modelcontextprotocol/sdk/types.js";
 import path from "path";
-import { PythonEnvironmentManager } from "./environment-manager.mts";
+import { PythonEnvironmentManager } from "./environment-manager.mjs";
+
+// Re-export new model loading and simulation tools
+export { 
+  pysdLoadModelTool,
+  pysdRunSimulationTool,
+  pysdBatchSimulationTool,
+  handlePysdLoadModel,
+  handlePysdRunSimulation,
+  handlePysdBatchSimulation
+} from "./pysd-service.mjs";
 
 /**
  * MCP Tool for PySD environment setup
@@ -83,7 +93,7 @@ export const pysdValidateModelTool: Tool = {
  * Handle PySD environment setup
  */
 export async function handlePysdEnvironmentSetup(args: any) {
-  const { environment_id, python_version } = args;
+  const { environment_id } = args;
   const envPath = path.join("/workdir", ".venv", environment_id);
   
   const manager = new PythonEnvironmentManager();
