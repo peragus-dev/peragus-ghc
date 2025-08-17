@@ -125,7 +125,7 @@ docker build -t peragus .
 
 # Run with mounted volumes for persistence
 docker run -p 2150:2150 \
-  -v ~/.peragus:/root/.srcbook \
+  -v ~/.peragus:/root/.peragus \
   -v ~/.npm:/root/.npm \
   peragus
 ```

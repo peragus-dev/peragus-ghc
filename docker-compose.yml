@@ -8,8 +8,8 @@ services:
       - '${HOST_BIND:-127.0.0.1}:2150:2150'
     volumes:
       - type: bind
-        source: ~/.srcbook
-        target: /root/.srcbook
+        source: ~/.peragus
+        target: /root/.peragus
         bind:
           create_host_path: true
     environment:

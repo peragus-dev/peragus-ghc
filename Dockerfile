@@ -16,7 +16,7 @@ RUN pnpm install
 RUN pnpm build
 
 # Create necessary directories for volumes
-RUN mkdir -p /root/.srcbook /root/.npm
+RUN mkdir -p /root/.peragus /root/.npm && ln -sfn /root/.peragus /root/.srcbook
 
 # Source code will be mounted at runtime
 CMD [ "pnpm", "start" ]
