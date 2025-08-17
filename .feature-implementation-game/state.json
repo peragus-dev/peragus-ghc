@@ -1,0 +1,23 @@
+{
+  "feature": "PySD Integration - Python Environment Setup",
+  "deadline": "2025-08-20T00:00:00Z",
+  "risk_level": "high",
+  "rollout_strategy": "flagged",
+  "phase": 0,
+  "budgets": {
+    "error_budget": 0.02,
+    "performance_budget_ms": 50,
+    "oncall_load_budget_pts": 3
+  },
+  "slo": {
+    "availability": 0.999,
+    "p95_latency_ms": 250
+  },
+  "flags": {
+    "name": "feature.pysd_integration",
+    "default": false,
+    "kill_switch": true
+  },
+  "stakeholders": ["product_owner", "tech_lead", "sre", "qa", "docs", "security"],
+  "artifacts": {}
+}
